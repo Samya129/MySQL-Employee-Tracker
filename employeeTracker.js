@@ -15,4 +15,13 @@ function getAllDepartments() {
     console.table(res);
   });
 }
+
+function getAllRoles() {
+  connection.query("select * from role", function (err, res) {
+    if (err) throw err;
+    console.table(res);
+  });
+}
+
 getAllDepartments();
+getAllRoles();
