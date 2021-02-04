@@ -83,3 +83,26 @@ const addWhat = () => {
       }
     });
 };
+//Viewing Information:
+const viewWhat = () => {
+  inquirer
+    .prompt([
+      {
+        name: "viewing",
+        type: "checkbox",
+        message: "What would you like to view?",
+        choices: ["Department", "Role", "Employee"], //Repetitive...fix!
+      },
+    ])
+    .then((response) => {
+      switch (response.userChoice) {
+        case "Department":
+          return viewDepartment();//Do I want to create this function OR make it a subcategory then call the getAll functions?
+        case "Role":
+          return viewRole();
+        case "Employee":
+          return viewEmployee();
+      }
+    });
+};
+
