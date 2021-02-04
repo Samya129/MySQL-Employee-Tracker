@@ -83,7 +83,7 @@ const addWhat = () => {
       },
     ])
     .then((response) => {
-      switch (response.userChoice) {
+      switch (response.adding) {
         case "Department":
           return addDepartment();
         case "Role":
@@ -105,7 +105,7 @@ const viewWhat = () => {
       },
     ])
     .then((response) => {
-      switch (response.userChoice) {
+      switch (response.viewing) {
         case "Department":
           return viewDepartment();//Do I want to create this function OR make it a subcategory then call the getAll functions?
         case "Role":
@@ -128,7 +128,7 @@ const updateWhat = () => {
       },
     ])
     .then((response) => {
-      switch (response.userChoice) {
+      switch (response.updating) {
         case "Department":
           return updateDepartment();
         case "Role":
