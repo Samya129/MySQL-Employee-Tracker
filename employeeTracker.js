@@ -2,13 +2,23 @@
 const connection = require("./connectionPass");
 const cTable = require("console.table");
 const inquirer = require("inquirer");
+let figlet = require("figlet");
+
+// figlet('Welcome!', function(err, data) {
+//   if (err) {
+//       console.log('Something went wrong...');
+//       console.dir(err);
+//       return;
+//   }
+//   console.log(data)
+// });
 
 connection.connect((err) => {
   if (err) throw err;
   //console.log("connected as id " + connection.threadId);
   connection.end(); //close the connection
 });
-
+ 
 function getAllDepartments() {
   connection.query("select * from department", function (err, res) {
     if (err) throw err;
