@@ -106,3 +106,25 @@ const viewWhat = () => {
     });
 };
 
+//Updating Information:
+const updateWhat = () => {
+  inquirer
+    .prompt([
+      {
+        name: "updating",
+        type: "checkbox",
+        message: "What would you like to update?",
+        choices: ["Department", "Role", "Employee"], //Repetitive again...
+      },
+    ])
+    .then((response) => {
+      switch (response.userChoice) {
+        case "Department":
+          return updateDepartment();
+        case "Role":
+          return updateRole();
+        case "Employee":
+          return updateEmployee();
+      }
+    });
+};
