@@ -1,11 +1,11 @@
 // Dependencies
-const connection = require("./connection");
+const connection = require("./connectionPass");
 const cTable = require("console.table");
 const inquirer = require("inquirer");
 
 connection.connect((err) => {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId);
+  //console.log("connected as id " + connection.threadId);
   connection.end(); //close the connection
 });
 
@@ -59,7 +59,7 @@ const generalOptions = () => {
       //console.log(answer.userChoice)
     });
 };
-generalOptions();
+
 
 //Adding Information:
 const addWhat = () => {
@@ -99,7 +99,7 @@ const viewWhat = () => {
         case "Department":
           return viewDepartment();//Do I want to create this function OR make it a subcategory then call the getAll functions?
         case "Role":
-          return viewRole();
+          return getAllRoles();
         case "Employee":
           return viewEmployee();
       }
@@ -128,3 +128,4 @@ const updateWhat = () => {
       }
     });
 };
+generalOptions();
