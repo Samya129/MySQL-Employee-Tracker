@@ -52,7 +52,7 @@ const generalOptions = () => {
         name: "userChoice",
         type: "list",
         message: "Please select an option of what you would you like to do?",
-        choices: ["Add", "View", "Update", "Delete"],
+        choices: ["Add", "View", "Update", "Delete", "Main Menu"],
       },
     ])
     .then((response) => {
@@ -65,6 +65,8 @@ const generalOptions = () => {
           return updateWhat();
         case "Delete":
           return deleteWhat();
+        default:
+        mainMenu();
       }
       //console.log(answer.userChoice)
     });
@@ -139,3 +141,4 @@ const updateWhat = () => {
     });
 };
 generalOptions();
+mainMenu();
