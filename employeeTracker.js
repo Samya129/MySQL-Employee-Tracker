@@ -77,7 +77,7 @@ const addWhat = () => {
     .prompt([
       {
         name: "adding",
-        type: "checkbox",
+        type: "list",
         message: "What would you like to add?",
         choices: ["Department", "Role", "Employee"],
       },
@@ -99,7 +99,7 @@ const viewWhat = () => {
     .prompt([
       {
         name: "viewing",
-        type: "checkbox",
+        type: "list",
         message: "What would you like to view?",
         choices: ["Department", "Role", "Employee"], //Repetitive...fix!
       },
@@ -122,7 +122,7 @@ const updateWhat = () => {
     .prompt([
       {
         name: "updating",
-        type: "checkbox",
+        type: "list",
         message: "What would you like to update?",
         choices: ["Department", "Role", "Employee"], //Repetitive again...
       },
