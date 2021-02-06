@@ -21,9 +21,33 @@ connection.connect((err) => {
 function getAllDepartments() {
   connection.query("select * from department", function (err, res) {
     if (err) throw err;
-    console.table(res);
-  });
+    console.table(res); 
+  })
 }
+
+yesOrNo = () => {
+inquirer
+    .prompt([
+      {
+        name: "yesOrNo",
+        type: "checkbox",
+        message: "Are you done?",
+        choices: ["Yes", "No", "Return to Main Menu"],
+      },
+    ]).then((response) => {
+    switch (response.yesOrNo) {
+      case "Yes":
+        return addDepartment();
+      case "No":
+        return 
+      default:
+        mainMenu();
+    }
+
+  }
+}
+
+
 
 function getAllRoles() {
   connection.query("select * from role", function (err, res) {
@@ -232,7 +256,25 @@ addDepartment = () => {
 
 
 
-
+//   function removeDepartment() {
+//     let departments = await db.query('SELECT id, name FROM department');
+//     departments.push({ id: null, name: "Cancel" });
+//     inquirer.prompt([
+//         {
+//             name: "depName",
+//             type: "list",
+//             message: "Remove which department?",
+//             choices: departments.map(obj => obj.name)
+//         }
+//     ]).then(response => {
+//         if (response.depName != "Cancel") {
+//             let uselessDepartment = departments.find(obj => obj.name === response.depName);
+//             db.query("DELETE FROM department WHERE id=?", uselessDepartment.id);
+//             console.log("\x1b[32m", `${response.depName} was removed. Please reassign associated roles.`);
+//         }
+//         runApp();
+//     })
+// };
 
 
 
