@@ -245,14 +245,10 @@ function deleteRole() {
           name: "depName",
           type: "list",
           message: "Which department would you like to delete?",
-          choices: departments.map(obj => obj.name)
+          choices: [],
       }
   ]).then(response => {
-      if (response.depName != "Cancel") {
-          let uselessDepartment = departments.find(obj => obj.name === response.depName);
-          db.query("DELETE FROM department WHERE id=?", uselessDepartment.id);
-          console.log("\x1b[32m", `${response.depName} was removed. Please reassign associated roles.`);
-      }
+      
       mainMenu();
   })
   };
