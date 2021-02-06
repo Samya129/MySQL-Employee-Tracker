@@ -21,27 +21,27 @@ connection.connect((err) => {
 function getAllDepartments() {
   connection.query("select * from department", function (err, res) {
     if (err) throw err;
-    //console.table(res);
+    console.table(res);
   });
 }
 
 function getAllRoles() {
   connection.query("select * from role", function (err, res) {
     if (err) throw err;
-    //console.table(res);
+    console.table(res);
   });
 }
 
 function getAllEmployees() {
   connection.query("select * from employee", function (err, res) {
     if (err) throw err;
-    //console.table(res);
+    console.table(res);
   });
 }
 
-getAllDepartments();
-getAllRoles();
-getAllEmployees();
+// getAllDepartments();
+// getAllRoles();
+// getAllEmployees();
 
 //General Questions:
 const generalOptions = () => {
@@ -110,11 +110,11 @@ const viewWhat = () => {
     .then((response) => {
       switch (response.viewing) {
         case "Department":
-          return viewDepartment();//Do I want to create this function OR make it a subcategory then call the getAll functions?
+          return  getAllDepartments(); //viewDepartment();
         case "Role":
-          return getAllRoles();
+          return getAllRoles(); //viewRoles();
         case "Employee":
-          return viewEmployee();
+          return getAllEmployees(); //viewEmployee(); 
         default:
           mainMenu();
       }
@@ -197,7 +197,7 @@ updateRole = () => {
       name: "updateRole",
       type: "list",
       message: "Which role would you like to update?",
-      choices: roleOfNames
+      choices: [roleOfNames, "Return to Main Menu"]
     },
   ]).then((response)=>{
     console.log(response);
