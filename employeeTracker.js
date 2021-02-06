@@ -1,5 +1,5 @@
 // Dependencies
-const connection = require("./connectionPass");
+const connection = require("./connection");
 const cTable = require("console.table");
 const inquirer = require("inquirer");
 let figlet = require("figlet");
@@ -141,4 +141,4 @@ const updateWhat = () => {
     });
 };
 generalOptions();
-mainMenu();
+// mainMenu();
