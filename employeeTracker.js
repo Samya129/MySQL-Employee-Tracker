@@ -52,7 +52,7 @@ const generalOptions = () => {
         name: "userChoice",
         type: "list",
         message: "Please select an option of what you would you like to do?",
-        choices: ["Add", "View", "Update", "Delete", "Main Menu"],
+        choices: ["Add", "View", "Update", "Delete", "Done"],
       },
     ])
     .then((response) => {
@@ -66,7 +66,7 @@ const generalOptions = () => {
         case "Delete":
           return deleteWhat();
         default:
-        mainMenu();
+        done(); //create a done function! should say goodbye...
       }
       //console.log(answer.userChoice)
     });
@@ -81,7 +81,7 @@ const addWhat = () => {
         name: "adding",
         type: "list",
         message: "What would you like to add?",
-        choices: ["Department", "Role", "Employee"],
+        choices: ["Department", "Role", "Employee", "Return to Main Menu"],
       },
     ])
     .then((response) => {
@@ -92,6 +92,8 @@ const addWhat = () => {
           return addRole();
         case "Employee":
           return addEmployee();
+        default:
+          mainMenu();
       }
     });
 };
@@ -103,7 +105,7 @@ const viewWhat = () => {
         name: "viewing",
         type: "list",
         message: "What would you like to view?",
-        choices: ["Department", "Role", "Employee"], //Repetitive...fix!
+        choices: ["Department", "Role", "Employee", "Return to Main Menu"], //Repetitive...fix!
       },
     ])
     .then((response) => {
@@ -114,6 +116,8 @@ const viewWhat = () => {
           return getAllRoles();
         case "Employee":
           return viewEmployee();
+        default:
+          mainMenu();
       }
     });
 };
@@ -126,7 +130,7 @@ const updateWhat = () => {
         name: "updating",
         type: "list",
         message: "What would you like to update?",
-        choices: ["Department", "Role", "Employee"], //Repetitive again...
+        choices: ["Department", "Role", "Employee", "Return to Main Menu"], //Repetitive again...
       },
     ])
     .then((response) => {
@@ -137,8 +141,14 @@ const updateWhat = () => {
           return updateRole();
         case "Employee":
           return updateEmployee();
+        default:
+          mainMenu(); 
       }
     });
 };
 generalOptions();
-// mainMenu();
+
+//Main menu function:
+mainMenu = () => {
+  return generalOptions();
+};
