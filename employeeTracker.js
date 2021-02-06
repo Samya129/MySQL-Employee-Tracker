@@ -16,7 +16,6 @@ let figlet = require("figlet");
 connection.connect((err) => {
   if (err) throw err;
   //console.log("connected as id " + connection.threadId);
-  connection.end(); //close the connection
 });
  
 function getAllDepartments() {
@@ -185,6 +184,34 @@ mainMenu = () => {
 
 
 
+updateRole = () => {
+  connection.query("SELECT * FROM role", function (err, res){
+    if (err) throw err;
+    var roleResult = res; //all role results in the list defined
+    var roleOfNames = roleResult.map((newRole)=> { //mapping out to get the information you ACTUALLY want.
+    return newRole.title;  
+    }) 
+  inquirer
+  .prompt([
+    {
+      name: "updateRole",
+      type: "list",
+      message: "Which role would you like to update?",
+      choices: roleOfNames
+    },
+  ]).then((response)=>{
+    console.log(response);
+  })
+
+  })
+}
+
+
+
+
+
+
+
 
 
 // done = () => {
@@ -195,5 +222,6 @@ mainMenu = () => {
 //       return;
 //   }
 //   console.log(data)
+//   connection.end(); //close the connection
 // });
 // }

@@ -24,5 +24,8 @@
     "figlet": "^1.5.0",
     "inquirer": "^7.3.3",
     "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
