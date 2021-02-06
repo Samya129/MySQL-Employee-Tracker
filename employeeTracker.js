@@ -17,58 +17,6 @@ connection.connect((err) => {
   if (err) throw err;
   //console.log("connected as id " + connection.threadId);
 });
- 
-function getAllDepartments() {
-  connection.query("select * from department", function (err, res) {
-    if (err) throw err;
-    console.table(res); 
-    mainMenu();
-  })
-}
-
-yesOrNo = () => {
-inquirer
-    .prompt([
-      {
-        name: "yesOrNo",
-        type: "checkbox",
-        message: "Are you done?",
-        choices: ["Yes", "No"],
-      },
-    ]).then((response) => {
-    switch (response.yesOrNo) {
-      case "Yes":
-        return mainMenu();
-      case "No":
-      return 
-    }
-
-    })
-
-
-
-  };
-
-
-
-
-function getAllRoles() {
-  connection.query("select * from role", function (err, res) {
-    if (err) throw err;
-    console.table(res);
-  });
-}
-
-function getAllEmployees() {
-  connection.query("select * from employee", function (err, res) {
-    if (err) throw err;
-    console.table(res);
-  });
-}
-
-// getAllDepartments();
-// getAllRoles();
-// getAllEmployees();
 
 //General Questions:
 const generalOptions = () => {
@@ -92,12 +40,35 @@ const generalOptions = () => {
         case "Delete":
           return deleteWhat();
         default:
-        done(); //create a done function! should say goodbye...
+        done(); 
       }
       //console.log(answer.userChoice)
     });
 };
 
+//Main menu function:
+mainMenu = () => {
+  return generalOptions();
+};
+
+yesOrNo = () => {
+  inquirer
+      .prompt([
+        {
+          name: "yesOrNo",
+          type: "list",
+          message: "Are you done completely?",
+          choices: ["Yes, Exit Please!", "No, go back to the Main menu."],
+        },
+      ]).then((response) => {
+      switch (response.yesOrNo) {
+        case "Yes, Exit Please!":
+          return done();
+        case "No, go back to the Main menu.":
+        return mainMenu();
+      }
+      })
+    };
 
 //Adding Information:
 const addWhat = () => {
@@ -123,7 +94,32 @@ const addWhat = () => {
       }
     });
 };
-//Viewing Information:
+
+//Viewing Functions
+
+function viewAllDepartments() {
+  connection.query("select * from department", function (err, res) {
+    if (err) throw err;
+    console.table(res); 
+    yesOrNo();
+  })
+}
+function viewAllRoles() {
+  connection.query("select * from role", function (err, res) {
+    if (err) throw err;
+    console.table(res);
+    yesOrNo();
+  });
+}
+function viewAllEmployees() {
+  connection.query("select * from employee", function (err, res) {
+    if (err) throw err;
+    console.table(res);
+    yesOrNo();
+  });
+}
+
+//Viewing Questions:
 const viewWhat = () => {
   inquirer
     .prompt([
@@ -131,17 +127,17 @@ const viewWhat = () => {
         name: "viewing",
         type: "list",
         message: "What would you like to view?",
-        choices: ["Department", "Role", "Employee", "Return to Main Menu"], //Repetitive...fix!
+        choices: ["Departments", "Roles", "Employees", "Return to Main Menu"],
       },
     ])
     .then((response) => {
       switch (response.viewing) {
-        case "Department":
-          return  getAllDepartments(); //viewDepartment();
-        case "Role":
-          return getAllRoles(); //viewRoles();
-        case "Employee":
-          return getAllEmployees(); //viewEmployee(); 
+        case "Departments":
+          return  viewAllDepartments();
+        case "Roles":
+          return viewAllRoles(); 
+        case "Employees":
+          return viewAllEmployees();  
         default:
           mainMenu();
       }
@@ -200,10 +196,6 @@ const deleteWhat = () => {
 
 generalOptions();
 
-//Main menu function:
-mainMenu = () => {
-  return generalOptions();
-};
 
 updateRole = () => {
   connection.query("SELECT * FROM role", function (err, res){
@@ -252,14 +244,14 @@ addDepartment = () => {
   };
 
 
-// done = () => {
-//   figlet('Goodbye!', function(err, data) {
-//   if (err) {
-//       console.log('Something went wrong...');
-//       console.dir(err);
-//       return;
-//   }
-//   console.log(data)
-//   connection.end(); //close the connection
-// });
-// }
+done = () => {
+  figlet('Goodbye!', function(err, data) {
+  if (err) {
+      console.log('Something went wrong...');
+      console.dir(err);
+      return;
+  }
+  console.log(data)
+  connection.end(); //close the connection
+});
+}
