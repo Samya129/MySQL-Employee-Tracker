@@ -197,7 +197,7 @@ updateRole = () => {
       name: "updateRole",
       type: "list",
       message: "Which role would you like to update?",
-      choices: [roleOfNames, "Return to Main Menu"]
+      choices: roleOfNames
     },
   ]).then((response)=>{
     console.log(response);
@@ -205,6 +205,30 @@ updateRole = () => {
 
   })
 }
+
+function confirmUserText(userTxt) {
+  if ((userTxt.trim() != "") && (userTxt.trim().length <= 30)) {
+      return true;
+  }
+  return "Invalid entry. Please limit your entry to 30 characters or less."
+};
+
+addDepartment = () => {
+  inquirer
+  .prompt([
+    {
+      name: "departmentAdd",
+      type: "input",
+      message: "What department would you like to create?",
+      validate: confirmUserText,
+    },
+  ]).then((response)=>{
+   connection.query("INSERT INTO department (name) VALUES (?)", [response.departmentAdd]);
+   console.log(`${response.departmentAdd} was added to the list of departments.`);
+   mainMenu();
+  })
+
+  };
 
 
 
