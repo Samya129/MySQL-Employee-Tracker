@@ -146,6 +146,32 @@ const updateWhat = () => {
       }
     });
 };
+
+//Deleting Information:
+const deleteWhat = () => {
+  inquirer
+    .prompt([
+      {
+        name: "deleting",
+        type: "list",
+        message: "What would you like to delete?",
+        choices: ["Department", "Role", "Employee", "Return to Main Menu"], //Repetitive again...
+      },
+    ])
+    .then((response) => {
+      switch (response.deleting) {
+        case "Department":
+          return deleteDepartment();
+        case "Role":
+          return deleteRole();
+        case "Employee":
+          return deleteEmployee();
+        default:
+          mainMenu(); 
+      }
+    });
+};
+
 generalOptions();
 
 //Main menu function:
