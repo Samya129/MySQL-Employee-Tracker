@@ -22,6 +22,7 @@ function getAllDepartments() {
   connection.query("select * from department", function (err, res) {
     if (err) throw err;
     console.table(res); 
+    mainMenu();
   })
 }
 
@@ -32,20 +33,22 @@ inquirer
         name: "yesOrNo",
         type: "checkbox",
         message: "Are you done?",
-        choices: ["Yes", "No", "Return to Main Menu"],
+        choices: ["Yes", "No"],
       },
     ]).then((response) => {
     switch (response.yesOrNo) {
       case "Yes":
-        return addDepartment();
+        return mainMenu();
       case "No":
-        return 
-      default:
-        mainMenu();
+      return 
     }
 
-  }
-}
+    })
+
+
+
+  };
+
 
 
 
@@ -202,12 +205,6 @@ mainMenu = () => {
   return generalOptions();
 };
 
-
-
-
-
-
-
 updateRole = () => {
   connection.query("SELECT * FROM role", function (err, res){
     if (err) throw err;
@@ -230,6 +227,7 @@ updateRole = () => {
   })
 }
 
+//Validation:
 function confirmUserText(userTxt) {
   if ((userTxt.trim() != "") && (userTxt.trim().length <= 30)) {
       return true;
@@ -251,33 +249,7 @@ addDepartment = () => {
    console.log(`${response.departmentAdd} was added to the list of departments.`);
    mainMenu();
   })
-
   };
-
-
-
-//   function removeDepartment() {
-//     let departments = await db.query('SELECT id, name FROM department');
-//     departments.push({ id: null, name: "Cancel" });
-//     inquirer.prompt([
-//         {
-//             name: "depName",
-//             type: "list",
-//             message: "Remove which department?",
-//             choices: departments.map(obj => obj.name)
-//         }
-//     ]).then(response => {
-//         if (response.depName != "Cancel") {
-//             let uselessDepartment = departments.find(obj => obj.name === response.depName);
-//             db.query("DELETE FROM department WHERE id=?", uselessDepartment.id);
-//             console.log("\x1b[32m", `${response.depName} was removed. Please reassign associated roles.`);
-//         }
-//         runApp();
-//     })
-// };
-
-
-
 
 
 // done = () => {
