@@ -70,7 +70,76 @@ yesOrNo = () => {
       })
     };
 
-//Adding Information:
+//Validation:
+function confirmUserText(userTxt) {
+  if ((userTxt.trim() != "") && (userTxt.trim().length <= 30)) {
+      return true;
+  }
+  return "Invalid entry. Please limit your entry to 30 characters or less."
+};
+
+//Adding Functions
+addDepartment = () => {
+  inquirer
+  .prompt([
+    {
+      name: "departmentAdd",
+      type: "input",
+      message: "What department would you like to create?",
+      validate: confirmUserText,
+    },
+  ]).then((response)=>{
+   connection.query("INSERT INTO department (name) VALUES (?)", [response.departmentAdd]);
+   console.log(`${response.departmentAdd} was added to the list of departments.`);
+   mainMenu();
+  })
+  };
+
+  // addRole = () => {
+  //   inquirer
+  //   .prompt([
+  //     {
+  //       name: "roleAdd",
+  //       type: "input",
+  //       message: "What role would you like to create?",
+  //       validate: confirmUserText,
+  //     },
+  //   ]).then((response)=>{
+  //    connection.query("INSERT INTO role (title, salary, department_id ) VALUES (?)", [response.roleAdd]);
+  //    console.log(`${response.roleAdd} was added to the list of roles.`);
+  //    mainMenu();
+  //   })
+  //   };
+
+  addEmployee = () => {
+    inquirer
+    .prompt([
+      {
+        name: "employAddTitle",
+        type: "input",
+        message: "What is the type of job title you would like to add?",
+      },
+      {
+        name: "employAddSalary",
+        type: "input",
+        message: "How much does this given job title make a year?",
+      },
+      {
+        name: "employAddId",
+        type: "input",
+        message: "What is the department id for this job title?",
+      },
+    ]).then((response)=>{
+     connection.query("INSERT INTO role (title, salary, department_id ) VALUES (?)", [response.employAddTitle, response.employAddSalary, response.employAddId]);
+     console.log(`${response.roleAdd} was added to the list of roles.`);
+     mainMenu();
+    })
+    };
+
+
+
+
+//Adding Questions:
 const addWhat = () => {
   inquirer
     .prompt([
@@ -144,7 +213,7 @@ const viewWhat = () => {
     });
 };
 
-//Updating Information:
+//Updating Questions:
 const updateWhat = () => {
   inquirer
     .prompt([
@@ -168,8 +237,28 @@ const updateWhat = () => {
       }
     });
 };
+//Deleting Functions
+// function deleteDepartment(){}
+function deleteRole() {
+  inquirer.prompt([
+      {
+          name: "depName",
+          type: "list",
+          message: "Which department would you like to delete?",
+          choices: departments.map(obj => obj.name)
+      }
+  ]).then(response => {
+      if (response.depName != "Cancel") {
+          let uselessDepartment = departments.find(obj => obj.name === response.depName);
+          db.query("DELETE FROM department WHERE id=?", uselessDepartment.id);
+          console.log("\x1b[32m", `${response.depName} was removed. Please reassign associated roles.`);
+      }
+      mainMenu();
+  })
+  };
+// function deleteEmployee(){}
 
-//Deleting Information:
+//Deleting Questions:
 const deleteWhat = () => {
   inquirer
     .prompt([
@@ -177,7 +266,7 @@ const deleteWhat = () => {
         name: "deleting",
         type: "list",
         message: "What would you like to delete?",
-        choices: ["Department", "Role", "Employee", "Return to Main Menu"], //Repetitive again...
+        choices: ["Department", "Role", "Employee", "Return to Main Menu"],
       },
     ])
     .then((response) => {
@@ -219,29 +308,6 @@ updateRole = () => {
   })
 }
 
-//Validation:
-function confirmUserText(userTxt) {
-  if ((userTxt.trim() != "") && (userTxt.trim().length <= 30)) {
-      return true;
-  }
-  return "Invalid entry. Please limit your entry to 30 characters or less."
-};
-
-addDepartment = () => {
-  inquirer
-  .prompt([
-    {
-      name: "departmentAdd",
-      type: "input",
-      message: "What department would you like to create?",
-      validate: confirmUserText,
-    },
-  ]).then((response)=>{
-   connection.query("INSERT INTO department (name) VALUES (?)", [response.departmentAdd]);
-   console.log(`${response.departmentAdd} was added to the list of departments.`);
-   mainMenu();
-  })
-  };
 
 
 done = () => {
