@@ -215,11 +215,11 @@ function viewAllDepartments() {
   })
 }
 function viewAllRoles() {
-  connection.query("select title from role", function (err, res) {
+  connection.query("select * from role", function (err, res) {
     if (err) throw err;
-    console.log(res)
+    console.table(res)
     return res; //res. return array of mysql stuff
-    // yesOrNo();
+    // yesOrNo();   ISSUE HERE!!!!!!!!!
   });
 }
 function viewAllEmployees() {
