@@ -1,10 +1,10 @@
 USE employees_DB;
 
 INSERT INTO department(name) 
-VALUES ("HR"),("Sales"),("Payroll");
+VALUES ("Finance"),("Human Resources"), ("IT"),("Marketing");
 
 INSERT INTO role (title, salary, department_id) 
-VALUES ("Salesperson", 40000, 1), ("Representative", 35000, 2);
+VALUES ("Credit Analyst", 73000, 1), ("Applications Specialist", 66000, 2),("Network Architect", 100000, 3),("Coordinator", 44800, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id) 
-VALUES ("John","Smith",1, 1), ("Samantha", "Jones",2 , null);
+VALUES ("Ron","Weasley",1, 1), ("Sirius", "Black",2 , null),("Hermione", "Granger",3 , null), ("Neville", "Longbottom",4 , null);
