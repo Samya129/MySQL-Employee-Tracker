@@ -13,6 +13,7 @@ let figlet = require("figlet");
 //   console.log(data)
 // });
 
+//Testing the connection
 connection.connect((err) => {
   if (err) throw err;
   //console.log("connected as id " + connection.threadId);
@@ -78,6 +79,7 @@ function confirmUserText(userTxt) {
   return "Invalid entry. Please limit your entry to 30 characters or less."
 };
 
+
 //Adding Functions
 addDepartment = () => {
   inquirer
@@ -99,14 +101,40 @@ addDepartment = () => {
   //   inquirer
   //   .prompt([
   //     {
-  //       name: "roleAdd",
+  //       name: "roleTitle",
   //       type: "input",
   //       message: "What role would you like to create?",
   //       validate: confirmUserText,
   //     },
+  //     {
+  //       name: "roleSalary",
+  //       type: "input",
+  //       message: "How much does this person make a year?",
+  //       validate: confirmUserText,
+  //     },
+  // {
+  //   name: "employAddTitle",
+  //   type: "input",
+  //   message: "What is the type of job title you would like to add?",
+  // },
+  // {
+  //   name: "employAddSalary",
+  //   type: "input",
+  //   message: "How much does this given job title make a year?",
+  // },
+  // {
+  //   name: "employAddId",
+  //   type: "input",
+  //   message: "What is the role id for this job title?",
+  // },
+  // {
+  //   name: "employAddManagerId",
+  //   type: "input",
+  //   message: "What is the manager id for this job title?",
+  // },
   //   ]).then((response)=>{
-  //    connection.query("INSERT INTO role (title, salary, department_id ) VALUES (?)", [response.roleAdd]);
-  //    console.log(`${response.roleAdd} was added to the list of roles.`);
+  //    connection.query("INSERT INTO role (title, salary) VALUES (?)", [response.roleTitle, response.roleSalary]);
+  //    console.log(`${response.roleTitle} was added to the list of role titles`+ `and` + `${response.roleSalary} was added to their salary.`);
   //    mainMenu();
   //   })
   //   };
@@ -115,28 +143,42 @@ addDepartment = () => {
     inquirer
     .prompt([
       {
-        name: "employAddTitle",
+        name: "employAddFirst",
         type: "input",
-        message: "What is the type of job title you would like to add?",
+        message: "What is the first name of this employee?",
       },
       {
-        name: "employAddSalary",
+        name: "employAddLast",
         type: "input",
-        message: "How much does this given job title make a year?",
+        message: "What is the last name of this employee?",
       },
       {
         name: "employAddId",
         type: "input",
-        message: "What is the department id for this job title?",
+        message: "What is the role id for this job title?",
       },
-    ]).then((response)=>{
-     connection.query("INSERT INTO role (title, salary, department_id ) VALUES (?)", [response.employAddTitle, response.employAddSalary, response.employAddId]);
-     console.log(`${response.roleAdd} was added to the list of roles.`);
-     mainMenu();
-    })
-    };
-
-
+      {
+        name: "employAddManagerId",
+        type: "input",
+        message: "What is the manager id for this job title?",
+      },
+    ])
+    .then((response)=>{
+     connection.query("INSERT INTO employee SET ?",
+     {
+       first_name: response.employAddFirst,
+       last_name: response.employAddLast,
+       role_id: response.employAddId,
+       manager_id: response.employAddManagerId
+     },
+     function(err) {
+      if (err) throw err;
+      console.log("Your employee was created successfully!");
+      mainMenu();
+    }
+  )
+  });
+  }
 
 
 //Adding Questions:
@@ -165,7 +207,6 @@ const addWhat = () => {
 };
 
 //Viewing Functions
-
 function viewAllDepartments() {
   connection.query("select * from department", function (err, res) {
     if (err) throw err;
@@ -174,10 +215,11 @@ function viewAllDepartments() {
   })
 }
 function viewAllRoles() {
-  connection.query("select * from role", function (err, res) {
+  connection.query("select title from role", function (err, res) {
     if (err) throw err;
-    console.table(res);
-    yesOrNo();
+    console.log(res)
+    return res; //res. return array of mysql stuff
+    // yesOrNo();
   });
 }
 function viewAllEmployees() {
@@ -237,22 +279,38 @@ const updateWhat = () => {
       }
     });
 };
+
+
 //Deleting Functions
 // function deleteDepartment(){}
 function deleteRole() {
+  
+console.log(viewAllRoles())
+  var choices = viewAllRoles().then (res => res )
+  console.log(choices) 
   inquirer.prompt([
       {
-          name: "depName",
-          type: "list",
+          name: "roleDelete",
+          type: "rawlist",
           message: "Which department would you like to delete?",
-          choices: [],
+          choices: choices //display allroles as choices
       }
-  ]).then(response => {
+   ])
+  .then(response => {
+    var roleToDelete = response.name
+  //console.log(roleToDelete);
+  roles = roles.filter((role) => role != roleToDelete);
+  mainMenu();
+  return roles
+      //then filter through it and append everything BUT what was NOT deleted.
       
-      mainMenu();
   })
   };
 // function deleteEmployee(){}
+
+
+
+
 
 //Deleting Questions:
 const deleteWhat = () => {
@@ -283,7 +341,7 @@ generalOptions();
 
 
 updateRole = () => {
-  connection.query("SELECT * FROM role", function (err, res){
+  connection.query("UPDATE role SET ", function (err, res){
     if (err) throw err;
     var roleResult = res; //all role results in the list defined
     var roleOfNames = roleResult.map((newRole)=> { //mapping out to get the information you ACTUALLY want.
