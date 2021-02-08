@@ -221,7 +221,7 @@ async function viewAllRoles() {
   });
 }
 async function viewAllEmployees() {
-  connection.query("SELECT * from employee", function (err, res) {
+  connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id;", function (err, res) {
     if (err) throw err;
     console.table(res);
     yesOrNo();
@@ -354,6 +354,7 @@ updateRole = async () => {
       choices: roleOfNames
     },
   ]).then((response)=>{
+    //Pick the employee you would like to update, pick the new role they have THEN updating employee information.
     console.table(response);
   })
 
