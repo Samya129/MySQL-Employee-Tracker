@@ -221,7 +221,8 @@ async function viewAllRoles() {
   });
 }
 async function viewAllEmployees() {
-  connection.query("SELECT * FROM employees", function (err, res) {
+  connection.query(`SELECT e.id, CONCAT(e.first_name, " ", e.last_name) AS employee, role.title, department.name AS department, salary, CONCAT(m.first_name, " ", m.last_name) AS manager
+FROM employee e INNER JOIN role ON e.role_id=role.id INNER JOIN department on role.department_id=department.id LEFT JOIN employee m ON m.id=e.manager_id`, function (err, res) {
     if (err) throw err;
     console.table(res);
     yesOrNo();
