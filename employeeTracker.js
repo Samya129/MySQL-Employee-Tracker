@@ -214,14 +214,14 @@ async function viewAllDepartments() {
   })
 }
 async function viewAllRoles() {
-  connection.query("SELECT * from role", function (err, res) {
+  connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id", function (err, res) {
     if (err) throw err;
     console.table(res)
     yesOrNo(); 
   });
 }
 async function viewAllEmployees() {
-  connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id;", function (err, res) {
+  connection.query("SELECT * FROM employees", function (err, res) {
     if (err) throw err;
     console.table(res);
     yesOrNo();
