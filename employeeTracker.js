@@ -20,7 +20,7 @@ connection.connect((err) => {
 });
 
 //General Questions:
-const generalOptions = () => {
+const generalOptions = async () => {
   inquirer
     .prompt([
       {
@@ -48,11 +48,11 @@ const generalOptions = () => {
 };
 
 //Main menu function:
-mainMenu = () => {
+mainMenu = async () => {
   return generalOptions();
 };
 
-yesOrNo = () => {
+yesOrNo = async () => {
   inquirer
       .prompt([
         {
@@ -72,16 +72,15 @@ yesOrNo = () => {
     };
 
 //Validation:
-function confirmUserText(userTxt) {
+async function confirmUserText(userTxt) {
   if ((userTxt.trim() != "") && (userTxt.trim().length <= 30)) {
       return true;
   }
   return "Invalid entry. Please limit your entry to 30 characters or less."
 };
 
-
 //Adding Functions
-addDepartment = () => {
+addDepartment = async () => {
   inquirer
   .prompt([
     {
@@ -97,49 +96,49 @@ addDepartment = () => {
   })
   };
 
-  // addRole = () => {
-  //   inquirer
-  //   .prompt([
-  //     {
-  //       name: "roleTitle",
-  //       type: "input",
-  //       message: "What role would you like to create?",
-  //       validate: confirmUserText,
-  //     },
-  //     {
-  //       name: "roleSalary",
-  //       type: "input",
-  //       message: "How much does this person make a year?",
-  //       validate: confirmUserText,
-  //     },
-  // {
-  //   name: "employAddTitle",
-  //   type: "input",
-  //   message: "What is the type of job title you would like to add?",
-  // },
-  // {
-  //   name: "employAddSalary",
-  //   type: "input",
-  //   message: "How much does this given job title make a year?",
-  // },
-  // {
-  //   name: "employAddId",
-  //   type: "input",
-  //   message: "What is the role id for this job title?",
-  // },
-  // {
-  //   name: "employAddManagerId",
-  //   type: "input",
-  //   message: "What is the manager id for this job title?",
-  // },
-  //   ]).then((response)=>{
-  //    connection.query("INSERT INTO role (title, salary) VALUES (?)", [response.roleTitle, response.roleSalary]);
-  //    console.log(`${response.roleTitle} was added to the list of role titles`+ `and` + `${response.roleSalary} was added to their salary.`);
-  //    mainMenu();
-  //   })
-  //   };
+  addRole = async () => {
+    inquirer
+    .prompt([
+      {
+        name: "roleTitle",
+        type: "input",
+        message: "What role would you like to create?",
+        validate: confirmUserText,
+      },
+      {
+        name: "roleSalary",
+        type: "input",
+        message: "How much does this person make a year?",
+        validate: confirmUserText,
+      },
+  {
+    name: "employAddTitle",
+    type: "input",
+    message: "What is the type of job title you would like to add?",
+  },
+  {
+    name: "employAddSalary",
+    type: "input",
+    message: "How much does this given job title make a year?",
+  },
+  {
+    name: "employAddId",
+    type: "input",
+    message: "What is the role id for this job title?",
+  },
+  {
+    name: "employAddManagerId",
+    type: "input",
+    message: "What is the manager id for this job title?",
+  },
+    ]).then((response)=>{
+     connection.query("INSERT INTO role (title, salary) VALUES (?)", [response.roleTitle, response.roleSalary]);
+     console.log(`${response.roleTitle} was added to the list of role titles`+ `and` + `${response.roleSalary} was added to their salary.`);
+     mainMenu();
+    })
+    };
 
-  addEmployee = () => {
+  addEmployee = async () => {
     inquirer
     .prompt([
       {
@@ -155,12 +154,12 @@ addDepartment = () => {
       {
         name: "employAddId",
         type: "input",
-        message: "What is the role id for this job title?",
+        message: "What is the role id for this job title?", //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql.
       },
       {
         name: "employAddManagerId",
         type: "input",
-        message: "What is the manager id for this job title?",
+        message: "What is the manager id for this job title?", //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql
       },
     ])
     .then((response)=>{
@@ -182,7 +181,7 @@ addDepartment = () => {
 
 
 //Adding Questions:
-const addWhat = () => {
+const addWhat = async () => {
   inquirer
     .prompt([
       {
@@ -207,23 +206,22 @@ const addWhat = () => {
 };
 
 //Viewing Functions
-function viewAllDepartments() {
-  connection.query("select * from department", function (err, res) {
+async function viewAllDepartments() {
+  connection.query("SELECT * from department", function (err, res) {
     if (err) throw err;
     console.table(res); 
     yesOrNo();
   })
 }
-function viewAllRoles() {
-  connection.query("select * from role", function (err, res) {
+async function viewAllRoles() {
+  connection.query("SELECT * from role", function (err, res) {
     if (err) throw err;
     console.table(res)
-    return res; //res. return array of mysql stuff
-    // yesOrNo();   ISSUE HERE!!!!!!!!!
+    yesOrNo(); 
   });
 }
-function viewAllEmployees() {
-  connection.query("select * from employee", function (err, res) {
+async function viewAllEmployees() {
+  connection.query("SELECT * from employee", function (err, res) {
     if (err) throw err;
     console.table(res);
     yesOrNo();
@@ -231,7 +229,7 @@ function viewAllEmployees() {
 }
 
 //Viewing Questions:
-const viewWhat = () => {
+const viewWhat = async () => {
   inquirer
     .prompt([
       {
@@ -256,14 +254,14 @@ const viewWhat = () => {
 };
 
 //Updating Questions:
-const updateWhat = () => {
+const updateWhat = async () => {
   inquirer
     .prompt([
       {
         name: "updating",
         type: "list",
         message: "What would you like to update?",
-        choices: ["Department", "Role", "Employee", "Return to Main Menu"], //Repetitive again...
+        choices: ["Department", "Role", "Employee", "Return to Main Menu"],
       },
     ])
     .then((response) => {
@@ -283,7 +281,7 @@ const updateWhat = () => {
 
 //Deleting Functions
 // function deleteDepartment(){}
-function deleteRole() {
+async function deleteRole() {
   
 console.log(viewAllRoles())
   var choices = viewAllRoles().then (res => res )
@@ -313,7 +311,7 @@ console.log(viewAllRoles())
 
 
 //Deleting Questions:
-const deleteWhat = () => {
+const deleteWhat = async () => {
   inquirer
     .prompt([
       {
@@ -340,8 +338,8 @@ const deleteWhat = () => {
 generalOptions();
 
 
-updateRole = () => {
-  connection.query("UPDATE role SET ", function (err, res){
+updateRole = async () => {
+  connection.query("SELECT * from role", function (err, res){
     if (err) throw err;
     var roleResult = res; //all role results in the list defined
     var roleOfNames = roleResult.map((newRole)=> { //mapping out to get the information you ACTUALLY want.
@@ -356,7 +354,7 @@ updateRole = () => {
       choices: roleOfNames
     },
   ]).then((response)=>{
-    console.log(response);
+    console.table(response);
   })
 
   })
@@ -364,7 +362,19 @@ updateRole = () => {
 
 
 
-done = () => {
+
+
+
+
+
+
+
+
+
+
+
+
+done = async () => {
   figlet('Goodbye!', function(err, data) {
   if (err) {
       console.log('Something went wrong...');
