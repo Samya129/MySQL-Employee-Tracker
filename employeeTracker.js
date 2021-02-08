@@ -19,7 +19,7 @@ connection.connect((err) => {
   //console.log("connected as id " + connection.threadId);
 });
 
-//General Questions:
+//General Question:
 const generalOptions = async () => {
   inquirer
     .prompt([
@@ -180,7 +180,7 @@ addDepartment = async () => {
   }
 
 
-//Adding Questions:
+//Adding Question:
 const addWhat = async () => {
   inquirer
     .prompt([
@@ -229,7 +229,7 @@ FROM employee e INNER JOIN role ON e.role_id=role.id INNER JOIN department on ro
   });
 }
 
-//Viewing Questions:
+//Viewing Question:
 const viewWhat = async () => {
   inquirer
     .prompt([
@@ -254,7 +254,7 @@ const viewWhat = async () => {
     });
 };
 
-//Updating Questions:
+//Updating Question:
 const updateWhat = async () => {
   inquirer
     .prompt([
@@ -343,8 +343,8 @@ updateRole = async () => {
   connection.query("SELECT * from role", function (err, res){
     if (err) throw err;
     var roleResult = res; //all role results in the list defined
-    var roleOfNames = roleResult.map((newRole)=> { //mapping out to get the information you ACTUALLY want.
-    return newRole.title;  
+    var roleOfNames = roleResult.map((updateRole)=> { //mapping out to get the information you ACTUALLY want.
+    return updateRole.title;  
     }) 
   inquirer
   .prompt([
@@ -354,6 +354,12 @@ updateRole = async () => {
       message: "Which role would you like to update?",
       choices: roleOfNames
     },
+    {
+      name: "newRole",
+      type: "list",
+      message: "What is the new role for this person?",
+      choices: roleOfNames
+    },
   ]).then((response)=>{
     //Pick the employee you would like to update, pick the new role they have THEN updating employee information.
     console.table(response);
@@ -361,20 +367,6 @@ updateRole = async () => {
 
   })
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 done = async () => {
   figlet('Goodbye!', function(err, data) {
