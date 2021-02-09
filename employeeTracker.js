@@ -96,7 +96,7 @@ addDepartment = async () => {
   })
   };
 
-  addRole =  () => {
+  addRole = async () => {
     connection.query("SELECT * FROM department", function (err, res) {
       if (err) throw err;
       console.table(res); 
@@ -158,12 +158,15 @@ addDepartment = async () => {
       },
     ])
     .then((response)=>{
-      query = "SELECT top_albums.year, top_albums.album, top_albums.position, top5000.song, top5000.artist ";
-      query += "FROM top_albums INNER JOIN top5000 ON (top_albums.artist = top5000.artist AND top_albums.year ";
-      query += "= top5000.year) WHERE (top_albums.artist = ? AND top5000.artist = ?) ORDER BY top_albums.year, top_albums.position";
-     
-     
-      connection.query("INSERT INTO employee SET ?",
+      connection.query(`SELECT e.id, e.first_name AS "First Name", e.last_name AS "Last Name", IF NULL(r.title, "No Data") AS "Title", IF NULL(department_name, "No Data") AS "Department", IF NULL(r.salary, 'No Data') AS "Salary", CONCAT(m.first_name," ",m.last_name) AS "Manager"
+      FROM employee e
+      LEFT JOIN role r 
+      ON r.id = e.role_id 
+      LEFT JOIN department d 
+      ON d.id = r.department_id
+      LEFT JOIN employee m ON m.id = e.manager_id
+      WHERE CONCAT(m.first_name," ",m.last_name) = ?
+      ORDER BY e.id;`,
      {
        first_name: response.employAddFirst,
        last_name: response.employAddLast,
@@ -207,14 +210,14 @@ const addWhat = async () => {
 
 //Viewing Functions
 async function viewAllDepartments() {
-  connection.query("SELECT * from department", function (err, res) {
+  connection.query("SELECT * FROM department AS Department", function (err, res) {
     if (err) throw err;
     console.table(res); 
     yesOrNo();
   })
 }
 async function viewAllRoles() {
-  connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id", function (err, res) {
+  connection.query("SELECT role.id AS Id, title AS Title, salary AS Salary, department.name AS Department FROM role INNER JOIN department ON role.department_id = department.id", function (err, res) {
     if (err) throw err;
     console.table(res)
     yesOrNo(); 
@@ -282,29 +285,32 @@ const updateWhat = async () => {
 
 //Deleting Functions
 // function deleteDepartment(){}
-async function deleteRole() {
-  
-console.log(viewAllRoles())
-  var choices = viewAllRoles().then (res => res )
-  console.log(choices) 
+async function deleteRole() { 
+  connection.query("SELECT role.id AS Id, title AS Title, salary AS Salary, department.name AS Department FROM role INNER JOIN department ON role.department_id = department.id", function (err, res) {
+    if (err) throw err;
+    console.table(res); 
+    var deleteRoles = res;
+    var collOfRoles = deleteRoles.map((deletedRole)=>{
+      return deletedRole.title
+    })
   inquirer.prompt([
       {
           name: "roleDelete",
-          type: "rawlist",
-          message: "Which department would you like to delete?",
-          choices: choices //display allroles as choices
+          type: "list",
+          message: "Which role would you like to delete?",
+          choices: collOfRoles 
       }
    ])
   .then(response => {
-    var roleToDelete = response.name
-  //console.log(roleToDelete);
-  roles = roles.filter((role) => role != roleToDelete);
-  mainMenu();
-  return roles
-      //then filter through it and append everything BUT what was NOT deleted.
-      
+    connection.query(`DELETE FROM role WHERE role = role.id AS Id, title = title AS Title, salary= salary AS Salary`)
+
+    `DELETE FROM role WHERE title = ${response.deletedRole}")) ? `
+
+    //console.log(`Role: ${response.roleTitle}, Salary: ${response.roleSalary}, Department: ${response.roleDepartment} was added to the list of role titles.`)
+    mainMenu();
   })
-  };
+})
+};
 // function deleteEmployee(){}
 
 
