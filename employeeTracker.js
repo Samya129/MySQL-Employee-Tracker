@@ -96,47 +96,41 @@ addDepartment = async () => {
   })
   };
 
-  addRole = async () => {
+  addRole =  () => {
+    connection.query("SELECT * FROM department", function (err, res) {
+      if (err) throw err;
+      console.table(res); 
+      var namesOfDepartments = res;
+      var collOfDepartments = namesOfDepartments.map((nameOfDepartment)=>{
+        return nameOfDepartment.name
+      })
     inquirer
     .prompt([
       {
-        name: "roleTitle",
-        type: "input",
-        message: "What role would you like to create?",
-        validate: confirmUserText,
-      },
-      {
-        name: "roleSalary",
-        type: "input",
-        message: "How much does this person make a year?",
-        validate: confirmUserText,
-      },
-  {
-    name: "employAddTitle",
-    type: "input",
-    message: "What is the type of job title you would like to add?",
-  },
-  {
-    name: "employAddSalary",
-    type: "input",
-    message: "How much does this given job title make a year?",
-  },
-  {
-    name: "employAddId",
-    type: "input",
-    message: "What is the role id for this job title?",
-  },
-  {
-    name: "employAddManagerId",
-    type: "input",
-    message: "What is the manager id for this job title?",
-  },
+      name: "roleTitle",
+      type: "input",
+      message: "What role would you like to create?",
+    },
+    {
+      name: "roleSalary",
+      type: "input",
+      message: "How much does this person make a year?",
+    },
+    {
+      name: "roleDepartment",
+      type: "list",
+      message: "What department does this role associate with?",
+      choices: collOfDepartments,
+     
+    },
     ]).then((response)=>{
-     connection.query("INSERT INTO role (title, salary) VALUES (?)", [response.roleTitle, response.roleSalary]);
-     console.log(`${response.roleTitle} was added to the list of role titles`+ `and` + `${response.roleSalary} was added to their salary.`);
+     connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${response.roleTitle}","${response.roleSalary}", (SELECT id FROM department WHERE name = "${response.roleDepartment}"))`)
+     
+     console.log(`Role: ${response.roleTitle}, Salary: ${response.roleSalary}, Department: ${response.roleDepartment} was added to the list of role titles.`)
      mainMenu();
-    })
-    };
+  })
+  })
+  };
 
   addEmployee = async () => {
     inquirer
@@ -153,17 +147,23 @@ addDepartment = async () => {
       },
       {
         name: "employAddId",
-        type: "input",
-        message: "What is the role id for this job title?", //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql.
+        type: "list",
+        message: "What is your role?",
+        choices: "", //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql.
       },
       {
         name: "employAddManagerId",
-        type: "input",
-        message: "What is the manager id for this job title?", //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql
+        type: "list",
+        message: "Who is your manager?", //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql
       },
     ])
     .then((response)=>{
-     connection.query("INSERT INTO employee SET ?",
+      query = "SELECT top_albums.year, top_albums.album, top_albums.position, top5000.song, top5000.artist ";
+      query += "FROM top_albums INNER JOIN top5000 ON (top_albums.artist = top5000.artist AND top_albums.year ";
+      query += "= top5000.year) WHERE (top_albums.artist = ? AND top5000.artist = ?) ORDER BY top_albums.year, top_albums.position";
+     
+     
+      connection.query("INSERT INTO employee SET ?",
      {
        first_name: response.employAddFirst,
        last_name: response.employAddLast,
@@ -221,8 +221,8 @@ async function viewAllRoles() {
   });
 }
 async function viewAllEmployees() {
-  connection.query(`SELECT e.id, CONCAT(e.first_name, " ", e.last_name) AS employee, role.title, department.name AS department, salary, CONCAT(m.first_name, " ", m.last_name) AS manager
-FROM employee e INNER JOIN role ON e.role_id=role.id INNER JOIN department on role.department_id=department.id LEFT JOIN employee m ON m.id=e.manager_id`, function (err, res) {
+  connection.query(`SELECT e.id AS Id, CONCAT(e.first_name, " ", e.last_name) AS Employee, role.title AS Title, department.name AS Department, salary AS Salary, CONCAT(m.first_name, " ", m.last_name) AS Manager
+FROM employee e INNER JOIN role ON e.role_id=role.id INNER JOIN department ON role.department_id=department.id LEFT JOIN employee m ON m.id=e.manager_id`, function (err, res) {
     if (err) throw err;
     console.table(res);
     yesOrNo();
@@ -367,6 +367,11 @@ updateRole = async () => {
 
   })
 }
+
+
+
+
+
 
 done = async () => {
   figlet('Goodbye!', function(err, data) {
