@@ -37,7 +37,7 @@ const generalOptions = async () => {
         case "View":
           return viewWhat();
         case "Update":
-          return updateWhat();
+          return updateEmployee();
         case "Delete":
           return deleteWhat();
         default:
@@ -100,9 +100,9 @@ addDepartment = async () => {
     connection.query("SELECT * FROM department", function (err, res) {
       if (err) throw err;
       console.table(res); 
-      var namesOfDepartments = res;
-      var collOfDepartments = namesOfDepartments.map((nameOfDepartment)=>{
-        return nameOfDepartment.name
+      var namesOfRoles = res;
+      var collOfRoles = namesOfRoles.map((nameOfRole)=>{
+        return nameOfRole.name
       })
     inquirer
     .prompt([
@@ -119,8 +119,8 @@ addDepartment = async () => {
     {
       name: "roleDepartment",
       type: "list",
-      message: "What department does this role associate with?",
-      choices: collOfDepartments,
+      message: "What department does this person's role work in?",
+      choices: collOfRoles,
      
     },
     ]).then((response)=>{
@@ -258,29 +258,7 @@ const viewWhat = async () => {
 };
 
 //Updating Question:
-const updateWhat = async () => {
-  inquirer
-    .prompt([
-      {
-        name: "updating",
-        type: "list",
-        message: "What would you like to update?",
-        choices: ["Department", "Role", "Employee", "Return to Main Menu"],
-      },
-    ])
-    .then((response) => {
-      switch (response.updating) {
-        case "Department":
-          return updateDepartment();
-        case "Role":
-          return updateRole();
-        case "Employee":
-          return updateEmployee();
-        default:
-          mainMenu(); 
-      }
-    });
-};
+
 
 
 //Deleting Functions
@@ -344,21 +322,34 @@ const deleteWhat = async () => {
 
 generalOptions();
 
+function AllEmployees() {
+  return new Promise (function(resolve,reject){
+    connection.query(`SELECT * FROM employee`, function (err, res) {
+        if (err) reject(err);
+         var Employees = res.map((employee)=> { 
+           console.log(employee)
+          return employee.first_name;  
+          })
+        resolve(Employees)
+      });
+  })
+}
 
-updateRole = async () => {
-  connection.query("SELECT * from role", function (err, res){
+updateEmployee = async () => {
+  connection.query("SELECT * from role", async function (err, res){
     if (err) throw err;
     var roleResult = res; //all role results in the list defined
     var roleOfNames = roleResult.map((updateRole)=> { //mapping out to get the information you ACTUALLY want.
     return updateRole.title;  
     }) 
+    var employees = await  AllEmployees();
   inquirer
   .prompt([
     {
-      name: "updateRole",
+      name: "updateEmployee",
       type: "list",
-      message: "Which role would you like to update?",
-      choices: roleOfNames
+      message: "Which employee would you like to update?",
+      choices: employees
     },
     {
       name: "newRole",
@@ -368,7 +359,16 @@ updateRole = async () => {
     },
   ]).then((response)=>{
     //Pick the employee you would like to update, pick the new role they have THEN updating employee information.
-    console.table(response);
+    connection.query(`SELECT * FROM role WHERE title = '${response.newRole}'`, function(err, role){
+    connection.query(`SELECT * FROM employee WHERE first_name = '${response.updateEmployee}'`, function(err,user){
+      connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`,[role[0].id, user[0].id], function(err,res){
+        console.log(`Updated User: ${response.updateEmployee}`)
+        viewAllEmployees();
+      }) 
+    })
+    
+    })
+    
   })
 
   })
