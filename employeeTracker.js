@@ -263,11 +263,28 @@ const viewWhat = async () => {
 
 //Deleting Functions
 // function deleteDepartment(){}
+const deleteRole = () => {
+  connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id", function(err, res) {
+    if (err) throw err;
+    const rolesList = res;
+    const roleOfNames = rolesList.map((role) => {
+      return role.title
+    }); inquirer.prompt([
+      {
+        name: "roleToDelete",
+        type: "list",
+        message: "Which role would you like to delete?",
+        choices: roleOfNames,
+      }
+    ]).then((answers) => {
+      connection.query("DELETE FROM role WHERE (title) = ?", [
+        answers.roleToDelete, ])
+        console.log(`${answers.roleToDelete} was deleted from roles.`);
+      mainMenu();
+    })
+  })
+}
 // function deleteEmployee(){}
-
-
-
-
 
 //Deleting Questions:
 const deleteWhat = async () => {
@@ -360,24 +377,27 @@ done = async () => {
 });
 }
 
-const deleteRole = () => {
-  connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id", function(err, res) {
+const deleteDepartment = () =>{
+  connection.query(`SELECT * FROM department`, function (err, res){
     if (err) throw err;
-    const rolesList = res;
-    const roleOfNames = rolesList.map((role) => {
-      return role.title
-    }); inquirer.prompt([
-      {
-        type: "list",
-        message: "Which role would you like to delete?",
-        name: "roleToDelete",
-        choices: roleOfNames,
-      }
-    ]).then((answers) => {
-      connection.query("DELETE FROM role WHERE (title) = ?", [
-        answers.roleToDelete, ])
-        console.log(`${answers.roleToDelete} was deleted from roles.`);
-      mainMenu();
+    const listOfDepartments = res;
+    // console.table(res)
+    const departmentSelected = listOfDepartments.map((department) => {
+      return department.name
     })
+inquirer.prompt([
+  {
+    name: "deletedDepartment",
+    type: "list",
+    message: "Which department would you like to delete?",
+    choices: departmentSelected,
+  },
+]).then((response) => {
+connection.query(`DELETE FROM department WHERE (name) = ?`, [
+  response.deletedDepartment,
+]);
+console.log(`${response.deletedDepartment} was deleted from departments.`);
+mainMenu();
+})
   })
-}
+};
