@@ -96,7 +96,7 @@ addDepartment = async () => {
   })
   };
 
-  addRole = async () => {
+addRole = async () => {
     connection.query("SELECT * FROM department", function (err, res) {
       if (err) throw err;
       console.table(res); 
@@ -133,6 +133,15 @@ addDepartment = async () => {
   };
 
   addEmployee = async () => {
+    connection.query(
+      "SELECT first_name, last_name FROM employee WHERE manager_id IS NULL;",
+      function (err, res) {
+        if (err) throw err;
+        const managernames = res;
+        const employAddManagerId = managernames.map((obj) => {
+          return (obj.first_name + " " + obj.last_name);
+        })  
+        connection.query() 
     inquirer
     .prompt([
       {
@@ -154,19 +163,12 @@ addDepartment = async () => {
       {
         name: "employAddManagerId",
         type: "list",
-        message: "Who is your manager?", //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql
+        message: "Who is your manager?",
+        choices: employAddManagerId //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql
       },
     ])
     .then((response)=>{
-      connection.query(`SELECT e.id, e.first_name AS "First Name", e.last_name AS "Last Name", IF NULL(r.title, "No Data") AS "Title", IF NULL(department_name, "No Data") AS "Department", IF NULL(r.salary, 'No Data') AS "Salary", CONCAT(m.first_name," ",m.last_name) AS "Manager"
-      FROM employee e
-      LEFT JOIN role r 
-      ON r.id = e.role_id 
-      LEFT JOIN department d 
-      ON d.id = r.department_id
-      LEFT JOIN employee m ON m.id = e.manager_id
-      WHERE CONCAT(m.first_name," ",m.last_name) = ?
-      ORDER BY e.id;`,
+      connection.query(`SELECT first_name, last_name FROM employee WHERE manager_id IS NULL;`,
      {
        first_name: response.employAddFirst,
        last_name: response.employAddLast,
@@ -179,9 +181,10 @@ addDepartment = async () => {
       mainMenu();
     }
   )
+  
   });
+})
   }
-
 
 //Adding Question:
 const addWhat = async () => {
@@ -257,12 +260,82 @@ const viewWhat = async () => {
     });
 };
 
-//Updating Question:
-
-
+//Updating Employee Function:
+function AllEmployees() {
+  return new Promise (function(resolve,reject){
+    connection.query(`SELECT * FROM employee`, function (err, res) {
+        if (err) reject(err);
+         var Employees = res.map((employee)=> { 
+           //console.log(employee)
+          return employee.first_name;  
+          })
+        resolve(Employees)
+      });
+  })
+}
+updateEmployee = async () => {
+  connection.query("SELECT * from role", async function (err, res){
+    if (err) throw err;
+    var roleResult = res; //all role results in the list defined
+    var roleOfNames = roleResult.map((updateRole)=> { //mapping out to get the information you ACTUALLY want.
+    return updateRole.title;  
+    }) 
+    var employees = await  AllEmployees();
+  inquirer
+  .prompt([
+    {
+      name: "updateEmployee",
+      type: "list",
+      message: "Which employee would you like to update?",
+      choices: employees,
+    },
+    {
+      name: "newRole",
+      type: "list",
+      message: "What is the new role for this person?",
+      choices: roleOfNames
+    },
+  ]).then((response)=>{
+    //Pick the employee you would like to update, pick the new role they have THEN updating employee information.
+    connection.query(`SELECT * FROM role WHERE title = '${response.newRole}'`, function(err, role){
+    connection.query(`SELECT * FROM employee WHERE first_name = '${response.updateEmployee}'`, function(err,user){
+      connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`,[role[0].id, user[0].id], function(err,res){
+        console.log(`Updated User: ${response.updateEmployee}`)
+        viewAllEmployees();
+      }) 
+    })
+    
+    })
+    
+  })
+  })
+};
 
 //Deleting Functions
-// function deleteDepartment(){}
+const deleteDepartment = () =>{
+  connection.query(`SELECT * FROM department`, function (err, res){
+    if (err) throw err;
+    const listOfDepartments = res;
+    // console.table(res)
+    const departmentSelected = listOfDepartments.map((department) => {
+      return department.name
+    })
+inquirer.prompt([
+  {
+    name: "deletedDepartment",
+    type: "list",
+    message: "Which department would you like to delete?",
+    choices: departmentSelected,
+  },
+]).then((response) => {
+connection.query(`DELETE FROM department WHERE (name) = ?`, [
+  response.deletedDepartment,
+]);
+console.log(`${response.deletedDepartment} was deleted from departments.`);
+yesOrNo();
+})
+  })
+};
 const deleteRole = () => {
   connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id", function(err, res) {
     if (err) throw err;
@@ -284,9 +357,8 @@ const deleteRole = () => {
     })
   })
 }
-// function deleteEmployee(){}
 
-//Deleting Questions:
+//Deleting Question:
 const deleteWhat = async () => {
   inquirer
     .prompt([
@@ -294,7 +366,7 @@ const deleteWhat = async () => {
         name: "deleting",
         type: "list",
         message: "What would you like to delete?",
-        choices: ["Department", "Role", "Employee", "Return to Main Menu"],
+        choices: ["Department", "Role", "Return to Main Menu"],
       },
     ])
     .then((response) => {
@@ -303,8 +375,6 @@ const deleteWhat = async () => {
           return deleteDepartment();
         case "Role":
           return deleteRole();
-        case "Employee":
-          return deleteEmployee();
         default:
           mainMenu(); 
       }
@@ -312,58 +382,6 @@ const deleteWhat = async () => {
 };
 
 generalOptions();
-
-function AllEmployees() {
-  return new Promise (function(resolve,reject){
-    connection.query(`SELECT * FROM employee`, function (err, res) {
-        if (err) reject(err);
-         var Employees = res.map((employee)=> { 
-           console.log(employee)
-          return employee.first_name;  
-          })
-        resolve(Employees)
-      });
-  })
-}
-
-updateEmployee = async () => {
-  connection.query("SELECT * from role", async function (err, res){
-    if (err) throw err;
-    var roleResult = res; //all role results in the list defined
-    var roleOfNames = roleResult.map((updateRole)=> { //mapping out to get the information you ACTUALLY want.
-    return updateRole.title;  
-    }) 
-    var employees = await  AllEmployees();
-  inquirer
-  .prompt([
-    {
-      name: "updateEmployee",
-      type: "list",
-      message: "Which employee would you like to update?",
-      choices: employees
-    },
-    {
-      name: "newRole",
-      type: "list",
-      message: "What is the new role for this person?",
-      choices: roleOfNames
-    },
-  ]).then((response)=>{
-    //Pick the employee you would like to update, pick the new role they have THEN updating employee information.
-    connection.query(`SELECT * FROM role WHERE title = '${response.newRole}'`, function(err, role){
-    connection.query(`SELECT * FROM employee WHERE first_name = '${response.updateEmployee}'`, function(err,user){
-      connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`,[role[0].id, user[0].id], function(err,res){
-        console.log(`Updated User: ${response.updateEmployee}`)
-        viewAllEmployees();
-      }) 
-    })
-    
-    })
-    
-  })
-
-  })
-}
 
 done = async () => {
   figlet('Goodbye!', function(err, data) {
@@ -376,28 +394,3 @@ done = async () => {
   connection.end(); //close the connection
 });
 }
-
-const deleteDepartment = () =>{
-  connection.query(`SELECT * FROM department`, function (err, res){
-    if (err) throw err;
-    const listOfDepartments = res;
-    // console.table(res)
-    const departmentSelected = listOfDepartments.map((department) => {
-      return department.name
-    })
-inquirer.prompt([
-  {
-    name: "deletedDepartment",
-    type: "list",
-    message: "Which department would you like to delete?",
-    choices: departmentSelected,
-  },
-]).then((response) => {
-connection.query(`DELETE FROM department WHERE (name) = ?`, [
-  response.deletedDepartment,
-]);
-console.log(`${response.deletedDepartment} was deleted from departments.`);
-mainMenu();
-})
-  })
-};
