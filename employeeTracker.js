@@ -263,32 +263,6 @@ const viewWhat = async () => {
 
 //Deleting Functions
 // function deleteDepartment(){}
-async function deleteRole() { 
-  connection.query("SELECT role.id AS Id, title AS Title, salary AS Salary, department.name AS Department FROM role INNER JOIN department ON role.department_id = department.id", function (err, res) {
-    if (err) throw err;
-    console.table(res); 
-    var deleteRoles = res;
-    var collOfRoles = deleteRoles.map((deletedRole)=>{
-      return deletedRole.title
-    })
-  inquirer.prompt([
-      {
-          name: "roleDelete",
-          type: "list",
-          message: "Which role would you like to delete?",
-          choices: collOfRoles 
-      }
-   ])
-  .then(response => {
-    connection.query(`DELETE FROM role WHERE role = role.id AS Id, title = title AS Title, salary= salary AS Salary`)
-
-    `DELETE FROM role WHERE title = ${response.deletedRole}")) ? `
-
-    //console.log(`Role: ${response.roleTitle}, Salary: ${response.roleSalary}, Department: ${response.roleDepartment} was added to the list of role titles.`)
-    mainMenu();
-  })
-})
-};
 // function deleteEmployee(){}
 
 
@@ -374,11 +348,6 @@ updateEmployee = async () => {
   })
 }
 
-
-
-
-
-
 done = async () => {
   figlet('Goodbye!', function(err, data) {
   if (err) {
@@ -389,4 +358,26 @@ done = async () => {
   console.log(data)
   connection.end(); //close the connection
 });
+}
+
+const deleteRole = () => {
+  connection.query("SELECT role.id, title, salary, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id", function(err, res) {
+    if (err) throw err;
+    const rolesList = res;
+    const roleOfNames = rolesList.map((role) => {
+      return role.title
+    }); inquirer.prompt([
+      {
+        type: "list",
+        message: "Which role would you like to delete?",
+        name: "roleToDelete",
+        choices: roleOfNames,
+      }
+    ]).then((answers) => {
+      connection.query("DELETE FROM role WHERE (title) = ?", [
+        answers.roleToDelete, ])
+        console.log(`${answers.roleToDelete} was deleted from roles.`);
+      mainMenu();
+    })
+  })
 }
