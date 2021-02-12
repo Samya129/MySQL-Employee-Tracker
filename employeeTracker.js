@@ -156,13 +156,13 @@ addEmployee = async () => {
     inquirer
       .prompt([
         {
-          name: "addFirst",
+          name: "firstName",
           type: "input",
           message:
             "What is the first name of this employee you would like to add?",
         },
         {
-          name: "addLast",
+          name: "lastName",
           type: "input",
           message:
             "What is the last name of this employee you would like to add?",
@@ -172,7 +172,7 @@ addEmployee = async () => {
           type: "list",
           message: "What is your role?",
           choices: collOfRoles,
-          //[//array of roles ]
+          //[array of roles]
         },
         {
           name: "addManager",
@@ -182,8 +182,8 @@ addEmployee = async () => {
         },
       ])
       .then(async (response) => {
-        const firstName = response.addFirst;
-        const lastName = response.addLast;
+        const firstName = response.firstName;
+        const lastName = response.lastName;
 
         connection.query(
           "SELECT id FROM role WHERE title = ?",
@@ -218,84 +218,6 @@ addEmployee = async () => {
       });
   });
 };
-
-// const savedManagers = async () => {
-//   connection.query("SELECT * FROM employee",
-//   function(err,res){
-//     if(err) throw err
-//     let array = []
-//     res.forEach(person => {
-//      let personObject = {
-//        name: person.first_name + " " + person.last_name,
-//        value: person.role_id
-//      }
-//      array.push(personObject)
-//     });
-//   return array
-//   })
-// }
-
-// addEmployee = async () => {
-//   inquirer
-//   .prompt([
-//     {
-//       name: "addFirst",
-//       type: "input",
-//       message: "What is the first name of this employee?",
-//     },
-//     {
-//       name: "addLast",
-//       type: "input",
-//       message: "What is the last name of this employee?",
-//     },
-//     {
-//       name: "addId",
-//       type: "input",
-//       message: "What is your role?",
-//    //NEED TO DO SOMETHING WITH ID AND MANAGER ID with sql.
-//     },
-//     {
-//       name: "addManagerId",
-//       type: "list",
-//       message: "Who is your manager?",
-//       choices: await savedManagers()
-//     },
-//   ])
-//   .then((response)=>{
-//     connection.query(
-//       "INSERT INTO employee SET ?",
-
-//       {first_name: response.addFirst,
-//       last_name: response.addLast,
-//       role_id: 2,
-//       manager_id: response.addManagerId
-
-//       },
-//       function (err, res) {
-//         if (err) throw err;
-// const managernames = res;
-// const employAddManagerId = managernames.map((obj) => {
-//   return (obj.first_name + " " + obj.last_name);
-// })
-
-//   connection.query(`SELECT first_name, last_name FROM employee WHERE manager_id IS NULL;`,
-//  {
-//    first_name: response.employAddFirst,
-//    last_name: response.employAddLast,
-//    role_id: response.employAddId,
-//    manager_id: response.employAddManagerId
-//  },
-//  function(err) {
-//   if (err) throw err;
-//   console.log("Your employee was created successfully!");
-//   mainMenu();
-// }
-// )
-
-//   });
-
-// })
-//   }
 
 //Adding Question:
 const addWhat = async () => {
