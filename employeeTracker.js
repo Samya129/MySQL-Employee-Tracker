@@ -96,7 +96,7 @@ addDepartment = async () => {
 addRole = async () => {
   connection.query("SELECT * FROM department", function (err, res) {
     if (err) throw err;
-    console.table(res);
+    //console.table(res);
     var namesOfRoles = res;
     var collOfRoles = namesOfRoles.map((nameOfRole) => {
       return nameOfRole.name;
@@ -116,7 +116,7 @@ addRole = async () => {
         {
           name: "roleDepartment",
           type: "list",
-          message: "What department does this person's role work in?",
+          message: "What department does this person's job work in?",
           choices: collOfRoles,
         },
       ])
@@ -363,6 +363,29 @@ updateEmployee = async () => {
   });
 };
 
+//Deleting Question:
+const deleteWhat = async () => {
+  inquirer
+    .prompt([
+      {
+        name: "deleting",
+        type: "list",
+        message: "What would you like to delete?",
+        choices: ["Department", "Role", "Return to Main Menu"],
+      },
+    ])
+    .then((response) => {
+      switch (response.deleting) {
+        case "Department":
+          return deleteDepartment();
+        case "Role":
+          return deleteRole();
+        default:
+          mainMenu();
+      }
+    });
+};
+
 //Deleting Functions
 const deleteDepartment = async () => {
   connection.query(`SELECT * FROM department`, function (err, res) {
@@ -385,9 +408,7 @@ const deleteDepartment = async () => {
         connection.query(`DELETE FROM department WHERE (name) = ?`, [
           response.deletedDepartment,
         ]);
-        console.log(
-          `${response.deletedDepartment} was deleted from departments.`
-        );
+        console.log(`${response.deletedDepartment} was deleted from departments.`);
         yesOrNo();
       });
   });
@@ -415,33 +436,10 @@ const deleteRole = async () => {
             answers.roleToDelete,
           ]);
           console.log(`${answers.roleToDelete} was deleted from roles.`);
-          mainMenu();
+          yesOrNo();
         });
     }
   );
-};
-
-//Deleting Question:
-const deleteWhat = async () => {
-  inquirer
-    .prompt([
-      {
-        name: "deleting",
-        type: "list",
-        message: "What would you like to delete?",
-        choices: ["Department", "Role", "Return to Main Menu"],
-      },
-    ])
-    .then((response) => {
-      switch (response.deleting) {
-        case "Department":
-          return deleteDepartment();
-        case "Role":
-          return deleteRole();
-        default:
-          mainMenu();
-      }
-    });
 };
 
 generalOptions();
