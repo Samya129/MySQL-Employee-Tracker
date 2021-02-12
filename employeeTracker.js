@@ -142,10 +142,7 @@ addEmployee = async () => {
     });
 
     const employeeQuery = () => {
-      // Option 1: let arr = ["None"];
-      // Option 2: response.addManager === "None"
-      // ? null
-      // : 
+      let arr = ["None"];
       connection.query(
         'SELECT CONCAT(first_name, " ", last_name) as name FROM employee',
         (err, res) => {
