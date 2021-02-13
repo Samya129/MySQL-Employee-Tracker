@@ -66,6 +66,6 @@ The command-line application should allow users to:
 
 ## Questions
 
-[Demo Video](https://drive.google.com/file/d/1lYbAULJxS2TF-Z2f6Xm_WeX4ikGtwz5W/view)
+* [Demo Video](https://drive.google.com/file/d/1lYbAULJxS2TF-Z2f6Xm_WeX4ikGtwz5W/view)
 
 * If you have any questions regarding this repository, contact me either by email at Samyaf020@gmail.com, or you can find more of my work within my github account attached here [Github](https://github.com/Samya129). Here, you can also open an issue if needed.
