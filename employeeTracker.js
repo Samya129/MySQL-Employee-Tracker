@@ -189,30 +189,44 @@ addEmployee = async () => {
           "SELECT id FROM role WHERE title = ?",
           [response.addRole],
           (err, role) => {
-            if (err) throw err;
-            connection.query(
-              "SELECT id FROM employee WHERE CONCAT(first_name, ' ', last_name) = ?",
-              [response.addManager],
-              (err, manager) => {
-                if (err) throw err;
-                connection.query(
-                  "INSERT INTO employee SET ?",
-                  {
-                    first_name: firstName,
-                    last_name: lastName,
-                    role_id: role[0].id,
-                    manager_id: manager[0].id,
-                  },
-                  function (err, results) {
-                    if (err) throw err;
-                    console.log(
-                      "Your employee was created successfully:"
-                    );
-                    mainMenu();
-                  }
-                );
-              }
-            );
+            if (response.addManager === "None") {
+              connection.query(
+                "INSERT INTO employee SET ?",
+                {
+                  first_name: firstName,
+                  last_name: lastName,
+                  role_id: role[0].id,
+                  manager_id: null,
+                },
+                function (err, results) {
+                  if (err) throw err;
+                  console.log("Your employee was created successfully:");
+                  mainMenu();
+                }
+              );
+            } else {
+              connection.query(
+                "SELECT id FROM employee WHERE CONCAT(first_name, ' ', last_name) = ?",
+                [response.addManager],
+                (err, manager) => {
+                  if (err) throw err;
+                  connection.query(
+                    "INSERT INTO employee SET ?",
+                    {
+                      first_name: firstName,
+                      last_name: lastName,
+                      role_id: role[0].id,
+                      manager_id: manager[0].id,
+                    },
+                    function (err, results) {
+                      if (err) throw err;
+                      console.log("Your employee was created successfully:");
+                      mainMenu();
+                    }
+                  );
+                }
+              );
+            }
           }
         );
       });
@@ -408,7 +422,9 @@ const deleteDepartment = async () => {
         connection.query(`DELETE FROM department WHERE (name) = ?`, [
           response.deletedDepartment,
         ]);
-        console.log(`${response.deletedDepartment} was deleted from departments.`);
+        console.log(
+          `${response.deletedDepartment} was deleted from departments.`
+        );
         yesOrNo();
       });
   });
